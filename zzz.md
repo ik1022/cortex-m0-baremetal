@@ -11,5 +11,7 @@ xpm run prepare --config debug
 xpm run build --config debug
 
 pyocd erase --mass -t a31g123
-pyocd flash ./build/debug/baremetal.hex -t a31g123
+
+pyocd flash ./build/debug/baremetal.hex
+pyocd flash ./build/release/baremetal.hex
 ```

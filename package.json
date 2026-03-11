@@ -63,7 +63,24 @@
             "memo": "echo cmake -S. -B.build -GNinja -DCMAKE_BUILD_TYPE=Debug",
             "version": "cmake --version && ninja --version && arm-none-eabi-gcc --version"
         },
-        "actions": {},
+        "actions": {
+            "test-debug": [
+                "xpm run prepare --config debug",
+                "xpm run build --config debug"
+            ],
+            "test-release": [
+                "xpm run prepare --config release",
+                "xpm run build --config release"
+            ],
+            "test-all": [
+                "xpm run test-debug",
+                "xpm run test-release"
+            ],
+            "clean": [
+                "xpm run clean --config debug",
+                "xpm run clean --config release"
+            ]
+        },
         "buildConfigurations": {
             "debug": {
                 "properties": {
