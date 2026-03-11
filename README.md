@@ -66,3 +66,7 @@ in file CmakeLists.txt change CPU_OPTIONS:
 
 *Detailed info about options is in readme: gcc-arm directory: share/doc/gcc-arm-none-eabi/readme.txt
 or in [ARM-Options](https://gcc.gnu.org/onlinedocs/gcc/ARM-Options.html) document*
+
+
+cmake -S. -B.build -GNinja
+cmake --build .build --clean-first

@@ -1,0 +1,92 @@
+{
+    "name": "@<scope>/baremetal",
+    "version": "0.1.0",
+    "description": "A source xpm package with <your-description-here>",
+    "main": "",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "version": "cmake --version && ninja --version && arm-none-eabi-gcc --version"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/<user-id>/baremetal.git"
+    },
+    "homepage": "https://github.com/<user-id>/baremetal/",
+    "bugs": {
+        "url": "https://github.com/<user-id>/baremetal/issues/"
+    },
+    "keywords": [
+        "xpack"
+    ],
+    "author": {
+        "name": "<author-name>",
+        "email": "<author-email>",
+        "url": "<author-url>"
+    },
+    "license": "MIT",
+    "dependencies": {},
+    "devDependencies": {
+        "@xpack-dev-tools/rm-none-eabi-gcc": "15.2.1-1.1.1",
+        "@xpack-dev-tools/cmake": "3.31.9-1.1",
+        "@xpack-dev-tools/ninja-build": "1.13.1-1.1"
+    },
+    "xpack": {
+        "minimumXpmRequired": "0.21.4",
+        "dependencies": {},
+        "devDependencies": {
+            "@xpack-dev-tools/arm-none-eabi-gcc": {
+                "specifier": "15.2.1-1.1.1",
+                "local": "link",
+                "platforms": "all"
+            },
+            "@xpack-dev-tools/ninja-build": {
+                "specifier": "1.13.1-1.1",
+                "local": "link",
+                "platforms": "all"
+            },
+            "@xpack-dev-tools/cmake": {
+                "specifier": "3.31.9-1.1",
+                "local": "link",
+                "platforms": "all"
+            }
+        },
+        "properties": {
+            "buildFolderRelativePath": "{{ 'build' | path_join: configuration.name | to_filename | downcase }}",
+            "toolchainFileName": "arm-none-eabi.cmake",
+            "commandPrepare1": "cmake -S . -B {{ properties.buildFolderRelativePath }} -G Ninja {% if os.platform == 'win32' %}-D CMAKE_MAKE_PROGRAM=ninja.cmd{% endif %} -D CMAKE_BUILD_TYPE={{ properties.buildType }} -D CMAKE_EXPORT_COMPILE_COMMANDS=ON",
+            "commandPrepare": "cmake -S . -B {{ properties.buildFolderRelativePath }} -G Ninja -D CMAKE_BUILD_TYPE={{ properties.buildType }}",
+            "commandPrepareWithToolchain": "{{ properties.commandPrepare }} -DCMAKE_TOOLCHAIN_FILE=cmake/{{ properties.toolchainFileName }}",
+            "commandReconfigure": "{{ properties.commandPrepare }}",
+            "commandBuild": "cmake --build {{ properties.buildFolderRelativePath }} --clean-first",
+            "commandClean": "cmake --build {{ properties.buildFolderRelativePath }} --target clean",
+            "commandExecuteHello": "{{ properties.buildFolderRelativePath }}{{ path.sep }}hello-world",
+            "memo": "echo cmake -S. -B.build -GNinja -DCMAKE_BUILD_TYPE=Debug",
+            "version": "cmake --version && ninja --version && arm-none-eabi-gcc --version"
+        },
+        "actions": {},
+        "buildConfigurations": {
+            "debug": {
+                "properties": {
+                    "buildType": "Debug"
+                },
+                "actions": {
+                    "prepare": "{{ properties.commandPrepareWithToolchain }}",
+                    "build": [
+                        "{{ properties.commandReconfigure }}",
+                        "{{ properties.commandBuild }}"
+                    ],
+                    "clean": "{{ properties.commandClean }}",
+                    "execute": "{{ properties.commandExecuteHello }}"
+                }
+            },
+            "release": {
+                "inherit": [
+                    "debug"
+                ],
+                "properties": {
+                    "buildType": "Release"
+                }
+            }
+        }
+    }
+}

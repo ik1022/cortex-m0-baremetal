@@ -7,7 +7,11 @@ typedef void (*ptr_func_t)();
 // Undefined handler is pointing to this function, this stop MCU.
 // This function name must by not mangled, so must be C,
 // because alias("..") is working only with C code
-extern "C" void __stop() { while (true); }
+extern "C" void __stop()
+{
+    while (true)
+        ;
+}
 
 // Handlers for Cortex-M core.
 // These handler are with attribute 'weak' and can be overwritten
@@ -29,19 +33,7 @@ __attribute__((weak, alias("__stop"))) void DUMMY_handler();
 // Vector table for handlers
 // This array will be placed in ".vectors" section defined in linker script.
 __attribute__((section(".vectors"), used)) ptr_func_t __isr_vectors[] = {
-    RESET_handler,
-    NMI_handler,
-    HARDFAULT_handler,
-    MEMMANAGE_handler,
-    BUSFAULT_handler,
-    USAGEFAULT_handler,
-    DUMMY_handler,
-    DUMMY_handler,
-    DUMMY_handler,
-    DUMMY_handler,
-    SVCALL_handler,
-    DEBUGMONITOR_handler,
-    DUMMY_handler,
-    PENDSV_handler,
-    SYSTICK_handler,
+  RESET_handler,      NMI_handler,          HARDFAULT_handler, MEMMANAGE_handler, BUSFAULT_handler,
+  USAGEFAULT_handler, DUMMY_handler,        DUMMY_handler,     DUMMY_handler,     DUMMY_handler,
+  SVCALL_handler,     DEBUGMONITOR_handler, DUMMY_handler,     PENDSV_handler,    SYSTICK_handler,
 };

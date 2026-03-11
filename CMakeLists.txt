@@ -1,7 +1,11 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.31)
 
 # project name
 project(baremetal)
+
+
+#include("cmake/flash.cmake")
+#include("cmake/arm-none-eabi.cmake")
 
 # select linker script
 set(LINKER_SCRIPT "ld/stm32f031x6.ld")
@@ -12,8 +16,8 @@ set(CPU_OPTIONS -mthumb -mcpu=cortex-m0)
 # optimizations (-O0 -O1 -O2 -O3 -Os -Ofast -Og -flto)
 set(CMAKE_C_FLAGS_DEBUG "-Og -g -DDEBUG")
 set(CMAKE_CXX_FLAGS_DEBUG "-Og -g")
-set(CMAKE_C_FLAGS_RELEASE "-Os -flto")
-set(CMAKE_CXX_FLAGS_RELEASE "-Os -flto")
+set(CMAKE_C_FLAGS_RELEASE "-Os -g -flto -DNDEBUG")
+set(CMAKE_CXX_FLAGS_RELEASE "-Os -g -flto -DNDEBUG")
 
 add_compile_options(
     ${CPU_OPTIONS}
@@ -57,6 +61,7 @@ add_executable(${PROJECT_NAME}
     src/startup/startup.cpp
     src/startup/stack.cpp
     src/startup/handlers_cm.cpp
+    src/startup/handlers_stm32.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}
@@ -64,9 +69,22 @@ target_link_libraries(${PROJECT_NAME}
     -T${LINKER_SCRIPT}
     -nostartfiles
     m
-    # -nostdlib
+    -nostdlib
 )
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY LINK_DEPENDS ${CMAKE_SOURCE_DIR}/${LINKER_SCRIPT})
 
-include("cmake/flash.cmake")
+
+
+function(post_build TARGET)
+add_custom_command(
+    TARGET ${TARGET}
+    POST_BUILD
+    COMMAND ${CMAKE_OBJCOPY} -Oihex ${TARGET} ${TARGET}.hex
+    COMMAND ${CMAKE_OBJDUMP} -S ${TARGET} > ${TARGET}.lst
+    COMMAND ${CMAKE_NM} -C -l -n -S ${TARGET} > ${TARGET}.sym
+    COMMAND arm-none-eabi-size --format=berkeley ${TARGET}
+)
+endfunction()
+
+post_build(${PROJECT_NAME})

@@ -1,1 +1,8 @@
-_build
+.DS_Store
+
+
+xpacks/
+
+build/
+_build/*
+.build/*
