@@ -6,7 +6,7 @@
     "configurations": [
         {
             "cwd": "${workspaceFolder}",
-            "executable": "./.build/mcu.elf",
+            "executable": "./build/debug/baremetal",
             "name": "Cortex Debug with PyOCD",
             "request": "launch",
             "type": "cortex-debug",

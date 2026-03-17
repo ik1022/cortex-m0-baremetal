@@ -53,15 +53,16 @@
         "properties": {
             "buildFolderRelativePath": "{{ 'build' | path_join: configuration.name | to_filename | downcase }}",
             "toolchainFileName": "arm-none-eabi.cmake",
-            "commandPrepare1": "cmake -S . -B {{ properties.buildFolderRelativePath }} -G Ninja {% if os.platform == 'win32' %}-D CMAKE_MAKE_PROGRAM=ninja.cmd{% endif %} -D CMAKE_BUILD_TYPE={{ properties.buildType }} -D CMAKE_EXPORT_COMPILE_COMMANDS=ON",
-            "commandPrepare": "cmake -S . -B {{ properties.buildFolderRelativePath }} -G Ninja -D CMAKE_BUILD_TYPE={{ properties.buildType }}",
+			"commandCmake": "cmake{% if os.platform == 'win32' %}.cmd{% endif %}",
+            "commandPrepare1": "{{properties.commandCmake}} -S . -B {{ properties.buildFolderRelativePath }} -G Ninja {% if os.platform == 'win32' %}-D CMAKE_MAKE_PROGRAM=ninja.cmd{% endif %} -D CMAKE_BUILD_TYPE={{ properties.buildType }} -D CMAKE_EXPORT_COMPILE_COMMANDS=ON",
+            "commandPrepare": "{{properties.commandCmake}} -S . -B {{ properties.buildFolderRelativePath }} -G Ninja {% if os.platform == 'win32' %}-D CMAKE_MAKE_PROGRAM=ninja.cmd{% endif %} -D CMAKE_BUILD_TYPE={{ properties.buildType }}",
             "commandPrepareWithToolchain": "{{ properties.commandPrepare }} -DCMAKE_TOOLCHAIN_FILE=cmake/{{ properties.toolchainFileName }}",
             "commandReconfigure": "{{ properties.commandPrepare }}",
-            "commandBuild": "cmake --build {{ properties.buildFolderRelativePath }} --clean-first",
-            "commandClean": "cmake --build {{ properties.buildFolderRelativePath }} --target clean",
+            "commandBuild": "{{properties.commandCmake}} --build {{ properties.buildFolderRelativePath }} --clean-first",
+            "commandClean": "{{properties.commandCmake}} --build {{ properties.buildFolderRelativePath }} --target clean",
             "commandExecuteHello": "{{ properties.buildFolderRelativePath }}{{ path.sep }}hello-world",
-            "memo": "echo cmake -S. -B.build -GNinja -DCMAKE_BUILD_TYPE=Debug",
-            "version": "cmake --version && ninja --version && arm-none-eabi-gcc --version"
+            "memo": "{{properties.commandCmake}} -S. -B.build -GNinja -DCMAKE_BUILD_TYPE=Debug",
+            "version": "{{properties.commandCmake}} --version && ninja --version && arm-none-eabi-gcc --version"
         },
         "actions": {
             "test-debug": [

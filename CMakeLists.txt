@@ -8,7 +8,7 @@ project(baremetal)
 #include("cmake/arm-none-eabi.cmake")
 
 # select linker script
-set(LINKER_SCRIPT "ld/stm32f031x6.ld")
+set(LINKER_SCRIPT "A31G12x/ld/A31G12x.ld")
 
 # define CPU OPTIONS
 set(CPU_OPTIONS -mthumb -mcpu=cortex-m0)
@@ -58,10 +58,10 @@ link_directories(
 # list of modules to build final firmware
 add_executable(${PROJECT_NAME}
     src/main.cpp
-    src/startup/startup.cpp
-    src/startup/stack.cpp
-    src/startup/handlers_cm.cpp
-    src/startup/handlers_stm32.cpp
+    A31G12x/startup/startup.cpp
+    A31G12x/startup/stack.cpp
+    A31G12x/startup/handlers_cm.cpp
+    A31G12x/startup/handlers_a31g12x.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}
