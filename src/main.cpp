@@ -22,6 +22,8 @@
 
 // int *pfmod = (int *)0x30000500UL;
 // int *pfout = (int *)0x30000518UL;
+#include "../A31G12x/reg_core/nvic.hpp"
+#include "../A31G12x/reg_core/systick.hpp"
 
 static volatile unsigned &pfmod   = *reinterpret_cast<unsigned *>(0x30000500UL);
 static volatile unsigned &pfout   = *reinterpret_cast<unsigned *>(0x30000518UL);
@@ -39,6 +41,11 @@ void main_app()
     clkreg2 = 0x20;
 
     pfmod = 0x4000;
+
+    io::SYSTICK.LOAD.b.RELOAD = 1000;
+    io::SYSTICK.CSR.b.ENABLE  = 1;
+
+    io::NVIC.isr_disable();
 
     for (j = 0; j < 20; j++)
     {
